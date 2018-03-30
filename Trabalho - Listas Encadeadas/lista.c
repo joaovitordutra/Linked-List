@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "lista.h"
 
+//Instruçoes da lista
 struct lista
 {
 	int info;

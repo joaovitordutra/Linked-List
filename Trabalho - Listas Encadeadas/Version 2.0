@@ -1,0 +1,357 @@
+//Nome: Jo�o Vitor Dutra Sodr�
+//RA: 1105190
+//Algoritmos e Estruturas de Dados
+//Trabalho: Fazer uma lista encadeada ordenada utilizando ponteiro.
+
+
+#include <stdlib.h>
+#include <stdio.h>
+
+//Instru��o da Lista
+struct Lista{
+	int num;
+	struct Lista *prox;
+};
+
+
+//Definindo uma lista
+typedef struct Lista lista;
+
+int tam;
+
+
+void iniciar(lista *Lista); //inica lista
+int menu(void); //menu
+void opcao(lista *Lista, int op); //op��o menu
+lista *criaLi(); //cria lista
+void insereFim(lista *Lista); //insere no fim a lista
+void insereInicio(lista *Lista); //insere no inicio da lista
+void exibe(lista *Lista); //exibe lista
+void libera(lista *Lista); //libera na lista
+void insere (lista *Lista); //insere lista
+lista *retiraInicio(lista *Lista); //retira do inicio
+lista *retiraFim(lista *Lista); //retira do fim
+lista *retira(lista *Lista); //retira da lista
+
+
+
+//Main
+int main(void)
+{
+	lista *Lista = (lista*)malloc(sizeof(lista));
+	if(!Lista)
+	{
+		printf("Sem memoria!\n");
+		exit(1);
+	} else {
+		inicia(Lista);
+		int opt;
+		
+		do{
+			opt=menu();
+			opcao(Lista, opt);
+		}while(opt);
+		
+		free(Lista);
+		return 0;
+	}
+}
+
+
+
+//Inicia Lista
+void inicia(lista *Lista)
+{
+	Lista->prox=NULL;
+	tam=0;
+}
+
+
+
+//Menu da Lista
+int menu(void)
+{
+	int i;
+	
+	printf("                Menu\n");
+	printf(" -----------------------------------\n");
+	printf("| (0) Sair                         |\n");
+	printf("| (1) Apagar lista                 |\n");
+	printf("| (2) Exibir lista                 |\n");
+	printf("| (3) Adicionar elemento no inicio |\n");
+	printf("| (4) Adicionar elemento no final  |\n");
+	printf("| (5) Escolher onde inserir        |\n");
+	printf("| (6) Retirar elemento do inicio   |\n");
+	printf("| (7) Retirar elemento do fim      |\n");
+	printf("| (8) Escolher de onde tirar       |\n");
+	printf(" -----------------------------------\n");
+	printf("Opcao: ");
+	scanf("%d", &i);
+	
+	return i;
+}
+
+
+
+//Op�oes da Lista
+void opcao(lista *Lista, int op)
+{
+	lista *tmp;
+	switch(op){
+		case 0:
+			libera(Lista);
+			break;
+			
+		case 1:
+			libera(Lista);
+			inicia(Lista);
+			break;
+		
+		case 2:
+			exibe(Lista);
+			break;
+		
+		case 3:
+			insereInicio(Lista);
+			break;		
+			
+		case 4:
+			insereFim(Lista);
+			break;
+			
+		case 5:
+			insere(Lista);
+			break;
+		
+		case 6:
+			tmp= retiraInicio(Lista);
+			printf("Retirado: %3d\n\n", tmp->num);
+			break;
+			
+		case 7:
+			tmp= retiraFim(Lista);
+			printf("Retirado: %3d\n\n", tmp->num);
+			break;
+		
+		case 8:
+			tmp= retira(Lista);
+			printf("Retirado: %3d\n\n", tmp->num);
+			break;
+		
+		default:
+			printf("Comando invalido\n\n");
+	}
+}
+
+
+
+//Verifica se esta vazia = NULL
+int vazia(lista *Lista)
+{
+	if(Lista->prox == NULL)
+		return 1;
+	else
+		return 0;
+}
+
+
+
+//Aloca��o dinamica de memoria
+lista *aloca()
+{
+	lista *novo=(lista*)malloc(sizeof(lista));
+	if(!novo){
+		printf("Sem memoria!");
+		exit(1);
+	}else{
+		printf("Novo elemento");
+		scanf("%d", &novo->num);
+		return novo;
+	}
+}
+
+
+
+//Insere no fim da lista
+void insereFim(lista *Lista)
+{
+	lista *novo=aloca();
+	novo->prox = NULL;
+	
+	if(vazia(Lista))
+		Lista->prox=novo;
+	else{
+		lista *tmp = Lista->prox;
+		
+		while(tmp->prox != NULL)
+			tmp = tmp -> prox;
+		
+		tmp->prox=novo;
+	}
+	tam++;
+}
+
+
+
+//Insere no inicio da lista
+void insereInicio(lista *Lista)
+{
+	lista *novo=aloca();
+	lista *oldHead = Lista->prox;
+	
+	Lista->prox=novo;
+	novo->prox=oldHead;
+	
+	tam++;
+}
+
+
+
+//Exibe lista
+void exibe(lista *Lista)
+{
+	system("clear");
+	if(vazia(Lista)){
+		printf("Lista vazia!\n\n");
+		return ;
+	}
+	
+	lista *tmp;
+	tmp = Lista->prox;
+	printf("Lista:");
+	while( tmp != NULL){
+		printf("%5d", tmp->num);
+		tmp = tmp->prox;
+	}
+	printf("\n        ");
+	int count;
+	for(count=0 ; count < tam ; count++)
+		printf("  ^  ");
+	printf("\nOrdem:");
+	for(count=0 ; count < tam ; count++)
+		printf("%5d", count+1);
+	
+		
+	printf("\n\n");
+}
+
+
+
+//Libera lista
+void libera(lista *Lista)
+{
+	if(!vazia(Lista)){
+		lista *proxLista,
+			  *atual;
+		
+		atual = Lista->prox;
+		while(atual != NULL){
+			proxLista = atual->prox;
+			free(atual);
+			atual = proxLista;
+		}
+	}
+}
+
+
+
+//Insere na lista
+void insere(lista *Lista)
+{
+	int pos,
+		count;
+	printf("Em que posicao, [de 1 ate %d] voce deseja inserir: ", tam);
+	scanf("%d", &pos);
+	
+	if(pos>0 && pos <= tam){
+		if(pos==1)
+			insereInicio(Lista);
+		else{
+			lista *atual = Lista->prox,
+				 *anterior=Lista; 
+			lista *novo=aloca();
+				 
+			for(count=1 ; count < pos ; count++){
+					anterior=atual;
+					atual=atual->prox;
+			}
+			anterior->prox=novo;
+			novo->prox = atual;
+			tam++;
+		}
+			
+	}else
+		printf("Elemento invalido\n\n");		
+}
+
+
+//Retira no inicio da lista
+lista *retiraInicio(lista *Lista)
+{
+	if(Lista->prox == NULL){
+		printf("Lista ja esta vazia\n");
+		return NULL;
+	}else{
+		lista *tmp = Lista->prox;
+		Lista->prox = tmp->prox;
+		tam--;
+		return tmp;
+	}
+				
+}
+
+//Retira no fim da lista
+lista *retiraFim(lista *Lista)
+{
+	if(Lista->prox == NULL){
+		printf("Lista esta vazia\n\n");
+		return NULL;
+	}else{
+		lista *ultimo = Lista->prox,
+			 *penultimo = Lista;
+			 
+		while(ultimo->prox != NULL){
+			penultimo = ultimo;
+			ultimo = ultimo->prox;
+		}
+			 
+		penultimo->prox = NULL;
+		tam--;
+		return ultimo;		
+	}
+}
+
+
+//retira da op�ao desejada
+lista *retira(lista *Lista)
+{
+	int opt,
+		count;
+	printf("Que posicao, [de 1 ate %d] voce deseja retirar: ", tam);
+	scanf("%d", &opt);
+	
+	if(opt>0 && opt <= tam){
+		if(opt==1)
+			return retiraInicio(Lista);
+		else{
+			lista *atual = Lista->prox,
+				 *anterior=Lista; 
+				 
+			for(count=1 ; count < opt ; count++){
+				anterior=atual;
+				atual=atual->prox;
+			}
+			
+		anterior->prox=atual->prox;
+		tam--;
+		return atual;
+		}
+		
+			
+	}else{
+		printf("Elemento invalido\n\n");
+		return NULL;
+	}
+}
+
+//FIM
